@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.7'
 
 networks:
   zPluginNet:
@@ -7,20 +7,21 @@ networks:
 
 services:
   elasticsearch:
-    image: elasticsearch:8.16.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.1
     container_name: elasticsearch
     networks:
       - zPluginNet
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false # Para desabilitar autenticação (apenas para testes)
+      - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     ports:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+
   kibana:
-    image: kibana:8.16.1
+    image: docker.elastic.co/kibana/kibana:8.16.1
     container_name: kibana
     networks:
       - zPluginNet
@@ -31,6 +32,20 @@ services:
     depends_on:
       - elasticsearch
 
+  heartbeat:
+    image: docker.elastic.co/beats/heartbeat:8.16.1
+    container_name: heartbeat
+    networks:
+      - zPluginNet
+    volumes:
+      - ./heartbeat.yaml:/usr/share/heartbeat/heartbeat.yml
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    command: ["heartbeat", "-e", "-strict.perms=false"]
+
 volumes:
   es_data:
     driver: local
+

@@ -1,0 +1,24 @@
+heartbeat.monitors:
+  - type: http
+    id: zPluginExtensão
+    name: Produtos zPlugin
+    schedule: "@every 1s"
+    hosts: ["http://142.93.120.214:4001/api/status"]
+    ipv4: true
+    ipv6: true
+    mode: any
+
+  - type: http
+    id: mercObras
+    name: Merc Rede Obras
+    schedule: "@every 1s"
+    hosts: ["http://134.209.68.56:3020/api/status"]
+    ipv4: true
+    ipv6: true
+    mode: any
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+
+setup.kibana:
+  host: "http://kibana:5601"
